@@ -50,14 +50,14 @@ spec:
     spec:
       containers:
       - name: test-pod-info
-        image: pod-intern-info:latest
+        image: pod-intern-info:0.0.1
         imagePullPolicy: IfNotPresent
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 80
+        - containerPort: 5000
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -83,6 +83,32 @@ spec:
         ports:
         - containerPort: 80
 ---
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: test-network
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: test-network
+    template:
+      metadata:
+        labels:
+          app: test-network
+      spec:
+        containers:
+        - name: test-network
+          image: praqma/network-multitool:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          command:
+            - "bash"
+          tty: true
+
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -107,7 +133,7 @@ spec:
     app: test-pod-info
   ports:
   - port: 4056
-    targetPort: 80
+    targetPort: 5000
 
 ---
 apiVersion: v1

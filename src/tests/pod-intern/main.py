@@ -25,4 +25,5 @@ def publish():
     result = get_info()
     return flask.jsonify({ 'info': result })
 
-app.run(port=80)
+if __name__ == "__main__":
+    app.run(port=80, host="0.0.0.0")
