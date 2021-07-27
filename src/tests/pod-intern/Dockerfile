@@ -1,4 +1,4 @@
-FROM python:3.10.0b4-alpine3.14
+FROM python:3.9.6
 
 ENV FLASK_APP main
 
@@ -9,4 +9,4 @@ COPY main.py main.py
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT [ "flask", "run" ]
+ENTRYPOINT [ "python", "main.py" ]
