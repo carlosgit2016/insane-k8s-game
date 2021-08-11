@@ -6,7 +6,7 @@ metadata:
   labels:
     name: test
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: test
@@ -20,14 +20,17 @@ spec:
         # A hostPath volume mounts a file or directory from the host node's filesystem into your Pod
         - name: sample-page-app
           hostPath: 
-            path: /home/cflor/git/personal/insane-k8s-game/src/tests/sample-page
+            path: /www/root/app
       containers:
         - name: webapp
           image: nginx:latest
           resources:
+            requests:
+              memory: "32Mi"
+              cpu: "125m"
             limits:
               memory: "64Mi"
-              cpu: "500m"
+              cpu: "250m"
           ports:
           - containerPort: 80
           volumeMounts:
@@ -39,7 +42,7 @@ kind: Deployment
 metadata:
   name: test-pod-info
 spec:
-  replicas: 5
+  replicas: 0
   selector:
     matchLabels:
       app: test-pod-info
@@ -58,6 +61,16 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /test
+            port: 80
+            httpHeaders:
+              - name: StatusCode
+                value: '200'
+          periodSeconds: 5
+          initialDelaySeconds: 3
+          failureThreshold: 2
 ---
 apiVersion: v1
 kind: Pod
@@ -71,8 +84,8 @@ spec:
     image: praqma/network-multitool:latest
     resources:
       limits:
-        memory: "64Mi"
-        cpu: "250m"
+        memory: 128Mi
+        cpu: "500m"
 
 ---
 apiVersion: apps/v1
@@ -80,7 +93,7 @@ kind: Deployment
 metadata:
   name: handler
 spec:
-  replicas: 0
+  replicas: 2
   selector:
     matchLabels:
       app: handler
@@ -98,6 +111,23 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 80
+        # kubelet perform the livenessProbe
+        livenessProbe:
+          httpGet:
+            httpHeaders:
+              - name: StatusCode
+                value: '200'
+            path: /
+            port: 80
+          # exec:
+          #   command:
+          #     - cat
+          #     - /usr/share/nginx/html/index.html
+          periodSeconds: 5
+          failureThreshold: 2
+          initialDelaySeconds: 1
+          # tcpSocket:
+          #   port: 80
 ---
 apiVersion: v1
 kind: Service

@@ -16,6 +16,10 @@ Sample game to demonstrate k8s resources and their power for scalability
     - Prove the client can reach the handler 
     - Prove the handler can scale up if the client is more than 2 or the CPU hit the max allowed limit
 
+    - Add DNS names for handler to be accessible outside the cluster
+    - Test those DNS names internally
+    - Add a healthy check to test nginx default port for the handler
+
 ## Tests
 ### Reaching the test service internally
 ```bash
